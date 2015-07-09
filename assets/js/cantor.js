@@ -1,9 +1,6 @@
 var c = document.getElementById("myCanvas");
 var ctx = c.getContext("2d");
-
-ctx.fillStyle = "#FF0000";
-ctx.fillRect(50,50,150,75);
-
+ 
 ctx.beginPath();
 ctx.arc(95,50,40,0,2*Math.PI);
 ctx.stroke();
