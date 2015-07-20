@@ -1,4 +1,3 @@
-//http://processingjs.org/learning/topic/koch/
 var c = document.getElementById("koch");
 var context = c.getContext('2d');
 var ctx = context;
@@ -29,6 +28,7 @@ function fractal(A, B, depth){
     if (depth < 0){
         return null;                
     }
+
     var C = divide(add(multiply(A, 2), B), 3);
     var D = divide(add(multiply(B, 2), A), 3);
     var F = divide(add(A, B), 2);

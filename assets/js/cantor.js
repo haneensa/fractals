@@ -1,23 +1,18 @@
-// fillRect(x, y, width, height)
-// strokeRect(x, y, width, height)
-// clearRect(x, y, width, height)
-// arc(x, y, r, sAngle, eAngle, counterclockwise)
-// moveTo(x, y) moves the pencil to the specified starting point
-// lineTo(x, y) draws a line to the specified ending point
-// fillText('text', x, y)
-// double buffering
-
 var canvas = document.getElementById("cantor");
 var context = null;
-var p = 3;
 
 function init() {
     if (canvas && canvas.getContext('2d') ) {
         context = canvas.getContext('2d');
+        draw();
+    }
+}
+
+function draw() {
         context.clearRect(0, 0, context.width, context.height);
         background(500, 550, context);
         cantor(context, 10, 200, 530);
-    }
+
 }
 
 init();
