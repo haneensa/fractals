@@ -14,20 +14,11 @@ var p = 3;
 function init() {
     if (canvas && canvas.getContext('2d') ) {
         context = canvas.getContext('2d');
-        context.clearRect(0, 0, 500, 450);
+        context.clearRect(0, 0, context.width, context.height);
         background(500, 550, context);
         cantor(context, 10, 200, 530);
     }
 }
-canvas.addEventListener("click", update, false);
-
-function update(e) {
-    p++;
-    p %= 6;
-    alert("alet");
-    init();
-}
-
 
 init();
 
@@ -48,6 +39,7 @@ function background(width, height, ctx) {
 
 function line(ctx, x, y, len) {
 	ctx.beginPath();
+	ctx.lineWidth = 2;
 	ctx.moveTo(x, y);
  	ctx.lineTo(x + len, y);
  	ctx.strokeStyle = "#1EBAAB";
@@ -62,6 +54,6 @@ function cantor(ctx, x, y, len) {
     line(ctx, x, y, len);
     y += 20;
 
-    cantor(ctx, x, y, len/p);
-    cantor(ctx, x+len*2/3, y, len/p);
+    cantor(ctx, x, y, len/3);
+    cantor(ctx, x+len*2/3, y, len/3);
 }
