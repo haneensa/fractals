@@ -35,9 +35,10 @@ triangle(ctx, 400);
 ctx.translate(0, 85);
 clear(ctx, 200);
 
-
+/*
 function fractal() {
 // draw triangle 
 // subdivide it into four triangles
 // remove the middle one
 }
+*/
