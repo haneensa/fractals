@@ -1,114 +1,110 @@
 //http://processingjs.org/learning/topic/koch/
-//
-// fillRect(x, y, width, height)
-// strokeRect(x, y, width, height)
-// clearRect(x, y, width, height)
-// arc(x, y, r, sAngle, eAngle, counterclockwise)
-// moveTo(x, y) moves the pencil to the specified starting point
-// lineTo(x, y) draws a line to the specified ending point
-// fillText('text', x, y)
-// double buffering
+function Koch() {
+	this.depth = 4;
+	this.count = 0;
+	this.canvas = null;
+	this.context = null;
+	this.init = function() {
+		this.canvas = document.getElementById("koch");
+		if (this.canvas && this.canvas.getContext("2d")) {
+			this.context = this.canvas.getContext('2d');
+			var width = this.canvas.width;
+			var height = this.canvas.height;
+			var $this = this;
+			this.canvas.addEventListener("mousemove", function() {
+				$this.count++; // to slow down the change
+				if ($this.count%10 == 0)
+					$this.depth++;
+				$this.depth %= 6;
+				$this.draw(width, height, $this.context);
+			}, false);
+			this.draw(width, height, this.context);
+		}
+	}
 
-/* GLobal Variables */
-var canvas = document.getElementById("koch");
-var context = canvas.getContext('2d');
-var depth = 4;
-var count = 0;
+	this.draw = function(w, h, ctx) {
+		ctx.clearRect(0, 0, w, h);
+		this.background(w, h, ctx);
+		ctx.beginPath();
+		ctx.stroke();
+		ctx.closePath();
+		this.koch([50,150], [500,150], this.depth, ctx);
+		this.koch([270,490], [50,150], this.depth, ctx);
+		this.koch([500,150],[270,490], this.depth, ctx);
+	}
 
+	this.background = function(w, h, ctx) {
+		for (var x = 0; x < w; x += 10) {
+			ctx.moveTo(x, 0);
+			ctx.lineTo(x, h);
+		}
 
-function background(width, height, ctx) {
-    for (var x = 0.5; x < height; x += 10) {
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, width);
-    }
+		for (var y = 0; y < h; y += 10) {
+			ctx.moveTo(0, y);
+			ctx.lineTo(w, y);
+		}
 
-    for (var y = 0.5; y < width; y += 10) {
-        ctx.moveTo(0, y);
-        ctx.lineTo(height, y);
-    }
+		ctx.strokeStyle = "#eee";
+		ctx.stroke();
+	}
 
-    ctx.strokeStyle = "#eee";
-    ctx.stroke();
-}
+	this.koch = function(A, B, depth, ctx){
+		if (depth < 0){
+			return null;
+		}
+		// compute points
+		var C = this.divide(this.add(this.multiply(A, 2), B), 3);
+		var D = this.divide(this.add(this.multiply(B, 2), A), 3);
+		var F = this.divide(this.add(A, B), 2);
 
-function init(){
-    context.clearRect(0, 0, 500, 550);
-    background(canvas.height, canvas.width, context);
-    context.beginPath();
-    context.stroke();
-    context.closePath();
-    fractal([50,150], [500,150], depth);
-    fractal([270,490], [50,150], depth);
-    fractal([500,150],[270,490], depth);
-}
+		var V1 = this.divide(this.minus(F, A), this.length(F, A));
+		var V2 = [V1[1], -V1[0]];
 
-canvas.addEventListener("mousemove", update, false);
+		// The tip of the new triangle
+		var E = this.add(this.multiply(V2, Math.sqrt(3)/6 * this.length(B, A)), F);
 
-function update(e){
-    count++; // to slow down the change
-    if (count%10 == 0) 
-        depth++;
-    depth %= 6;
-    init();
-}
+		this.drawLine(A, B, "#1EBAAB", ctx);
 
+		if (depth !=0){
+			for (var i=0;i<10;i++)
+				this.drawLine(C, D, "white", ctx);
+		}
 
-function fractal(A, B, depth){
-    if (depth < 0){
-        return null;                
-    }
-    // compute points
-    var C = divide(add(multiply(A, 2), B), 3);
-    var D = divide(add(multiply(B, 2), A), 3);
-    var F = divide(add(A, B), 2);
+		this.koch(A, C, depth-1, ctx);
+		this.koch(C, E, depth-1, ctx);
+		this.koch(E, D, depth-1, ctx);
+		this.koch(D, B, depth-1, ctx);
+	}
 
-    var V1 = divide(minus(F, A), length(F, A));
-    var V2 = [V1[1], -V1[0]];
+	this.drawLine = function(a, b, color, ctx){
+		ctx.beginPath();
+		ctx.strokeStyle = color;
+		ctx.moveTo(a[0], a[1]);
+		ctx.lineTo(b[0], b[1]);
+		ctx.stroke();
+		ctx.closePath();
+	}
 
-    // The tip of the new triangle 
-    var E = add(multiply(V2, Math.sqrt(3)/6 * length(B, A)), F);
+	this.multiply = function(v, num){
+			return [v[0]*num, v[1]*num];
+	}
 
-    DrawLine(A, B, "#1EBAAB");
-
-    if (depth !=0){
-        for (var i=0;i<10;i++)
-            DrawLine(C, D, "white");
-    }
-
-    fractal(A, C, depth-1);
-    fractal(C, E, depth-1);
-    fractal(E, D, depth-1);
-    fractal(D, B, depth-1);
-}
-
-function multiply(v, num){
-        return [v[0]*num, v[1]*num];
-}
-
-function divide(v, num){
-        return [v[0]/num, v[1]/num];
-}
+	this.divide = function(v, num){
+			return [v[0]/num, v[1]/num];
+	}
  
-function add(a, b){
-        return [a[0]+b[0], a[1]+b[1]];
+	this.add = function(a, b){
+			return [a[0]+b[0], a[1]+b[1]];
+	}
+
+	this.minus = function(a, b){
+			return [a[0]-b[0], a[1]-b[1]];
+	}
+
+	this.length = function(a, b){
+			return Math.sqrt(Math.pow(a[0] - b[0],2) + Math.pow(a[1] - b[1],2));
+	}
 }
 
-function minus(a, b){
-        return [a[0]-b[0], a[1]-b[1]];
-}
-
-function length(a, b){
-        return Math.sqrt(Math.pow(a[0] - b[0],2) + 
-                                     Math.pow(a[1] - b[1],2));
-}
-
-function DrawLine(a, b, c){
-    context.beginPath();
-    context.strokeStyle = c;
-    context.moveTo(a[0], a[1]);
-    context.lineTo(b[0], b[1]);
-    context.stroke();
-    context.closePath();
-}
-
-init();
+var koch = new Koch();
+koch.init();
